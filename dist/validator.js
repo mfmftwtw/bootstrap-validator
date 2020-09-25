@@ -12,8 +12,16 @@
   // VALIDATOR CLASS DEFINITION
   // ==========================
 
+  function getCheckboxValue($el) {
+    var checked = false;
+    $('input[name="' + $el.attr('name') + '"]').each(function() {
+      if ($(this).prop('checked')) checked = true;
+    })
+    return checked;
+  }
+
   function getValue($el) {
-    return $el.is('[type="checkbox"]') ? $el.prop('checked')                                     :
+    return $el.is('[type="checkbox"]') ? getCheckboxValue($el)                                   :
            $el.is('[type="radio"]')    ? !!$('[name="' + $el.attr('name') + '"]:checked').length :
            $el.is('select[multiple]')  ? ($el.val() || []).length                                :
                                          $el.val()
@@ -183,7 +191,7 @@
 
     $.each(this.validators, $.proxy(function (key, validator) {
       var error = null
-      if ((getValue($el) || $el.attr('required')) &&
+      if (((getValue($el) === false || getValue($el) === '') && $el.attr('required')) &&
           ($el.attr('data-' + key) !== undefined || key == 'native') &&
           (error = validator.call(this, $el))) {
          error = getErrorMessage(key) || error
